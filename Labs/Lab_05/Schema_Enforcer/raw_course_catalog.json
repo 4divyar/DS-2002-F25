@@ -1,0 +1,51 @@
+[
+    {
+        "course_id": "DS2002",
+        "section": "001",
+        "title": "Data Science Systems",
+        "level": 2000,
+        "instructors": [
+            {
+                "name": "Austin Rivera",
+                "role": "Primary"
+            },
+            {
+                "name": "Heywood Williams-Tracy",
+                "role": "TA"
+            }
+        ]
+    },
+    {
+        "course_id": "STAT4630",
+        "title": "Statistical Machine Learning",
+        "level": 4000,
+        "instructors": [
+            {
+                "name": "Shan Yu",
+                "role": "Primary"
+            }
+        ]
+    },
+    {
+        "course_id": "STAT4170",
+        "title": "Financial Time Series and Forecasting",
+        "level": 4000,
+        "instructors": [
+            {
+                "name": "Jeffery Woo",
+                "role": "Primary"
+            }
+        ]
+    },
+    {
+        "course_id": "C3710",
+        "title": "Intro to Cybersecurity",
+        "level": 3000,
+        "instructors": [
+            {
+                "name": "Angela Orebaugh",
+                "role": "Primary"
+            }
+        ]
+    }
+]

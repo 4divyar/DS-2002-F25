@@ -1,0 +1,6 @@
+student_id,major,GPA,is_cs_major,credits_taken
+12345,Computer Science,3.0,True,10.5
+67890,Data Science,3.4,False,32
+24680,English,3.87,No,74
+13579,Chemical Engineering,2.1,False,20
+36912,History,2.0,No,56
