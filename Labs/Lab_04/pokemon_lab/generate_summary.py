@@ -20,11 +20,11 @@ def generate_summary(portfolio_file):
     total_port_value = df['card_market_value'].sum()
 
     # find most valuable card
-    most_val_index = df['card_market_value'].idmax()
+    most_val_index = df['card_market_value'].idxmax()
     most_val_card = df.loc[most_val_index]
 
     # print report
-    print("The total portfolio market value is ${total_port_value}.")
+    print(f"The total portfolio market value is ${total_port_value}.")
     print(f"The most valuable card is {most_val_card['card_name']}. Its ID is {most_val_card['card_id']} and its market value is {most_val_card['card_market_value']}.")
 
 
