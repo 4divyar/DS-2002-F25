@@ -1,0 +1,30 @@
+--- Running Test Pipeline (Built-in Test Modes) ---
+Test complete.
+
+--- Adding New Card Set ---
+Enter the TCG Card Set ID (eg. base1, base4):
+base1
+The data from the ID base1 is being fetched.
+
+--- Starting Portfolio Build Workflow ---
+Do you want to add a NEW card set? (yes/no)
+yes
+make[1]: Entering directory '/workspaces/DS-2002-F25/Labs/Lab_04/pokemon_lab'
+--- Adding New Card Set ---
+Enter the TCG Card Set ID (eg. base1, base4):base1
+The data from the ID base1 is being fetched.
+make[1]: Leaving directory '/workspaces/DS-2002-F25/Labs/Lab_04/pokemon_lab'
+Card set added. Add another? (yes/no)
+no
+Do you want to refresh ALL existing card sets? (yes/no)
+yes
+make[1]: Entering directory '/workspaces/DS-2002-F25/Labs/Lab_04/pokemon_lab'
+--- Refreshing All Card Sets ---
+All card sets in card_set_lookup are being refreshed.
+* is being updated.
+jq: error: Could not open file card_set_lookup_test/*.json: No such file or directory
+Data was written to ./card_set_lookup/*.json.
+base1 is being updated.
+Data was written to ./card_set_lookup/base1.json.
+All card sets have been refreshed.
+make[1]: Leaving directory '/workspaces/DS-2002-F25/Labs/Lab_04/pokemon_lab'
