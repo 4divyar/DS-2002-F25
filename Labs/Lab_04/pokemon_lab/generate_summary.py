@@ -1,12 +1,15 @@
+#!/usr/bin/env python3
+
 import os
 import sys
 import pandas as pd
 
 def generate_summary(portfolio_file):
+    """Reads the portfolio CSV and prints a simplified summary to the console."""
 
     # check if file exists
     if not os.path.exists(portfolio_file):
-        print("The file '{portfolio_file}' is not found, error.", file=sys.stderr)
+        print("Error: The file '{portfolio_file}' is not found.", file=sys.stderr)
         sys.exit(1)
 
     df = pd.read_csv(portfolio_file)
@@ -20,12 +23,11 @@ def generate_summary(portfolio_file):
     total_port_value = df['card_market_value'].sum()
 
     # find most valuable card
-    most_val_index = df['card_market_value'].idxmax()
-    most_val_card = df.loc[most_val_index]
+    most_val_card = df.loc[df['card_market_value'].idxmax()]
 
     # print report
-    print(f"The total portfolio market value is ${total_port_value}.")
-    print(f"The most valuable card is {most_val_card['card_name']}. Its ID is {most_val_card['card_id']} and its market value is {most_val_card['card_market_value']}.")
+    print(f"Total Portfolio Value: ${total_port_value:,.2f}")
+    print(f"Most Valuable Card Name: {most_val_card['card_name']}, Card ID: {most_val_card['card_id']}, Value: {most_val_card['card_market_value']:,.2f}")
 
 
 # main function
@@ -36,5 +38,5 @@ def main():
 def test():
     generate_summary('test_card_portfolio.csv')
 
-# if __name__ == "__main__":
-#     test()
+if __name__ == "__main__":
+    test()

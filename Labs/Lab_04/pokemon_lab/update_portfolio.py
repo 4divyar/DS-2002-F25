@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 import os
 import sys
 import json
@@ -8,67 +10,47 @@ def _load_lookup_data(lookup_dir):
     all_lookup_df = []
 
     for filename in os.listdir(lookup_dir):
-        if not filename.endswith(".json"): # error handling
-            continue
+        if filename.endswith('.json'): # error handling
+            filepath = os.path.join(lookup_dir, filename)
 
-        # get and read json data
-        filepath = os.path.join(lookup_dir, filename)
-        with open(filepath, "r", encoding='utf-8') as f:
-            data = json.load(f)
+            with open(filepath, 'r', encoding='utf-8') as f:
+                data = json.load(f)
 
-        df = pd.json_normalize(data['data'])
+                df = pd.json_normalize(data['data'], errors='ignore')
+                df['card_market_value'] = df['tcgplayer.prices.holofoil.market'].fillna(df['tcgplayer.prices.normal.market']).fillna(0.0)
 
-        df['card_market_value'] = (df.get("tcgplayer.prices.holofoil.market", pd.Series([None]*len(df)))
-                                   .fillna(df.get("tcgplayer.prices.normal.market", 0.0))
-                                   .fillna(0.0) )
+                df = df.rename(columns={'id':'card_id', 'set.id':'set_id', 'set.name':'set_name', 'number': 'card_number', 'name':'card_name'})
 
-        df = df.rename(columns = {
-            "id": "card_id",
-            "name": "card_name",
-            "number": "card_number",
-            "set.id": "set_id",
-            "set.name": "set_name"
-        })
-
-        required_cols = [
-            "card_id", "card_name", "card_number",
-            "set_id", "set_name", "card_market_value"
-        ]
-        df = df[required_cols]
-        all_lookup_df.append(df)
-
-    # create final
+                required_cols = ['card_id', 'card_name', 'card_number', 'set_id', 'set_name', 'card_market_value']
+                all_lookup_df.append(df[required_cols].copy())
+            
     lookup_df = pd.concat(all_lookup_df, ignore_index=True)
+    return lookup_df.sort_values(by='card_market_value', ascending=False).drop_duplicates(
+        subset=['card_id'], keep='first'
+    )
 
-    # only return what we want, subset
-    return lookup_df.drop_duplicates(subset=["card_id"], keep="first").sort_values(by="card_id")
 
 
-# load inventory data function
 def _load_inventory_data(inventory_dir):
     inventory_data = []
 
-    # error handling, makes sure its csv file
     for filename in os.listdir(inventory_dir): 
-        if not filename.endswith(".csv"):
-            continue
+        if filename.endswith(".csv"):
+            # gets and reads data
+            filepath = os.path.join(inventory_dir, filename)
+            df = pd.read_csv(filepath)
+            inventory_data.append(df)
 
-        # gets and reads data
-        filepath = os.path.join(inventory_dir, filename)
-        df = pd.read_csv(filepath)
-        inventory_data.append(df)
-
-        if inventory_data.empty:
-            return pd.DataFrame()
+    if not inventory_data:
+        return pd.DataFrame()
     
-        inventory_df = pd.concat(inventory_data, ignore_index=True)
+    inventory_df = pd.concat(inventory_data, ignore_index=True)
+    inventory_df["card_id"] = inventory_df["set_id"].astype(str) + "-" + inventory_df["card_number"].astype(str)
+    
+    return inventory_df
 
-        # return unified key column
-        inventory_df["card_id"] = inventory_df["set_id"].astype(str) + "-" + inventory_df["card_number"].astype(str)
-        return inventory_df
+        
 
-
-# update portfolio function
 def update_portfolio(inventory_dir, lookup_dir, output_file):
 
     lookup_df = _load_lookup_data(lookup_dir)
@@ -76,20 +58,15 @@ def update_portfolio(inventory_dir, lookup_dir, output_file):
 
     # error handling, empty inventory
     if inventory_df.empty:
-        print("Error, the inventory dataframe is empty. Creating empty portfolio CSV.", file=sys.stderr)
-        headers = ["card_id", "card_name", "card_number", "set_name", "set_id", "card_market_value"]
-        empty_cols = [
-            "index", "binder_name", "page_number", "slot_number",
-            "card_id", "card_name", "set_id", "set_name", "card_market_value"
-        ]
-        empty_portfolio = pd.DataFrame(columns=headers)
-        empty_portfolio.to_csv(output_file, index=False)
+        cols = ["index", "card_id", "card_name", "card_number", "set_id", "set_name", "card_market_value"]
+        pd.DataFrame(columns=cols).to_csv(output_file, index=False)
+        print("No inventory data found. Outputting empty file.", file=sys.stderr)
         return
     
     # data merge, on card_id
     merged_df = pd.merge(
         inventory_df,
-        lookup_df[["card_id", "card_name", "set_name", "card_market_value"]],
+        lookup_df[["card_id", "set_name", "card_market_value"]],
         on="card_id",
         how="left"
     )
@@ -99,24 +76,22 @@ def update_portfolio(inventory_dir, lookup_dir, output_file):
     merged_df["set_name"] = merged_df["set_name"].fillna("NOT_FOUND")
 
     # index creation
-    merged_df["index"] = (
-        merged_df["binder_name"].astype(str) + "-" +
-        merged_df["page_number"].astype(str) + "-" +
-        merged_df["slot_number"].astype(str)
-    )
+    merged_df["index"] = merged_df["binder_name"].astype(str) + \
+                        merged_df["page_number"].astype(str) + \
+                        merged_df["slot_number"].astype(str)
+        
+    
 
-    final_cols = [
-        "index", "binder_name", "page_number", "slot_number",
-        "card_id", "card_name", "set_id", "set_name", "card_market_value"
-    ]
-
+    final_cols = ["index", "card_id", "card_name", "card_number", "set_id", "set_name", "card_market_value"]
     merged_df[final_cols].to_csv(output_file, index=False)
 
-    print("Portfolio successfully created!")
+    print(f"Portfolio successfully created! Data saved to {output_file}.")
+
 
 
 # main funciton
 def main():
+    """Public function: runs the production pipeline using the normal folders."""
     update_portfolio(
         inventory_dir="./card_inventory/",
         lookup_dir="./card_set_lookup/",
@@ -126,6 +101,7 @@ def main():
 
 # test function
 def test():
+    """Public function: runs the test pipeline using the dedicated test folders."""
     update_portfolio(
         inventory_dir="./card_inventory_test/",
         lookup_dir="./card_set_lookup_test/",
@@ -134,6 +110,6 @@ def test():
 
 
 # main block
-# if __name__ == "__main__":
-#     print("Starting Pokémon Card portfolio ETL in test mode.", file=sys.stderr)
-#     test()
+if __name__ == "__main__":
+    print("Starting Pokémon Card portfolio ETL in test mode.", file=sys.stderr)
+    test()

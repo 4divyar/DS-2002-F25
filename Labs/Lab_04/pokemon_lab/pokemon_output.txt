@@ -1,39 +1,36 @@
 --- Running Test Pipeline (Built-in Test Modes) ---
+Starting Pokémon Card portfolio ETL in test mode.
+Portfolio successfully created! Data saved to test_card_portfolio.csv.
+Total Portfolio Value: $326.55
+Most Valuable Card Name: Charizard, Card ID: base0-4, Value: 250.75
 Test complete.
 
---- Adding New Card Set ---
-Enter the TCG Card Set ID (eg. base1, base4):
-base1
-The data from the ID base1 is being fetched.
 
---- Starting Portfolio Build Workflow ---
-Do you want to add a NEW card set? (yes/no)
-no
-Do you want to refresh ALL existing card sets? (yes/no)
-yes
-make[1]: Entering directory '/workspaces/DS-2002-F25/Labs/Lab_04/pokemon_lab'
---- Refreshing All Card Sets ---
-All card sets in card_set_lookup are being refreshed.
-base1 is being updated.
-Data was written to ./card_set_lookup/base1.json.
-All card sets have been refreshed.
-
---- Starting Portfolio Build Workflow ---
-Do you want to add a NEW card set? (yes/no)
-yes
-make[1]: Entering directory '/workspaces/DS-2002-F25/Labs/Lab_04/pokemon_lab'
 --- Adding New Card Set ---
 Enter the TCG Card Set ID (eg. base1, base4):base1
 The data from the ID base1 is being fetched.
-make[1]: Leaving directory '/workspaces/DS-2002-F25/Labs/Lab_04/pokemon_lab'
-Card set added. Add another? (yes/no)
-no
-Do you want to refresh ALL existing card sets? (yes/no)
+Successfully saved the data to card_set_loopup/base1.json
+
+
+--- Starting Portfolio Build Workflow ---
+Do you want to add a NEW card set? (yes/no)
 yes
-make[1]: Entering directory '/workspaces/DS-2002-F25/Labs/Lab_04/pokemon_lab'
---- Refreshing All Card Sets ---
-All card sets in card_set_lookup are being refreshed.
-base1 is being updated.
-Data was written to ./card_set_lookup/base1.json.
-All card sets have been refreshed.
-make[1]: Leaving directory '/workspaces/DS-2002-F25/Labs/Lab_04/pokemon_lab'
+--- Adding New Card Set ---
+Enter the TCG Card Set ID (eg. base1, base4):base4
+The data from the ID base4 is being fetched.
+Successfully saved the data to card_set_loopup/base4.json
+Card set added. Add another? (yes/no)
+yes
+--- Adding New Card Set ---
+Enter the TCG Card Set ID (eg. base1, base4):base1
+The data from the ID base1 is being fetched.
+Successfully saved the data to card_set_loopup/base1.json
+Do you want to refresh ALL existing card sets? (yes/no)
+no
+Starting production pipeline.
+Running ETL...
+Portfolio successfully created! Data saved to card_portfolio.csv.
+Running portfolio summary report...
+Total Portfolio Value: $5,646.74
+Most Valuable Card Name: Charizard, Card ID: base1-4, Value: 457.11
+Production pipeline complete!

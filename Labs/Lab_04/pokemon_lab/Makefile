@@ -1,6 +1,7 @@
 # --- Variables ---
 PORTFOLIO_CSV := card_portfolio.csv
 TEST_PORTFOLIO_CSV := test_card_portfolio.csv
+PYTHON := /Users/divyar/opt/miniconda3/bin/python # had to add this var because it would constantly use the wrong env python version
 
 # --- Phony Targets ---
 .PHONY: all Add_Set Refresh_Sets Portfolio_Build Clean Test
@@ -9,7 +10,6 @@ TEST_PORTFOLIO_CSV := test_card_portfolio.csv
 all: Portfolio_Build
 
 # --- Utility Targets ---
-
 Add_Set:
 	 @echo "--- Adding New Card Set ---"
 	 @./add_card_set.sh
@@ -17,6 +17,7 @@ Add_Set:
 Refresh_Sets:
 	 @echo "--- Refreshing All Card Sets ---"
 	 @./refresh_card_sets.sh
+
 
 # --- Main Pipeline Target ---
 
@@ -41,7 +42,8 @@ Portfolio_Build: update_portfolio.py generate_summary.py pipeline.py
    	 fi
 
 	 @# Execute the centralized pipeline (Update + Summary)
-	 @python ./pipeline.py
+	 @$(PYTHON) ./pipeline.py
+
 
 # --- Testing Target ---
 
@@ -49,10 +51,11 @@ Portfolio_Build: update_portfolio.py generate_summary.py pipeline.py
 Test: update_portfolio.py generate_summary.py card_set_lookup_test/*.json
 	 @echo "--- Running Test Pipeline (Built-in Test Modes) ---"
    	 # 1. Run the update script (triggers test() function by default)
-	 @python ./update_portfolio.py
+	 @$(PYTHON) ./update_portfolio.py
    	 # 2. Run the summary script (triggers test() function by default)
-	 @python ./generate_summary.py
+	 @$(PYTHON) ./generate_summary.py
 	 @echo "Test complete."
+
 
 # --- Clean Target ---
 Clean:
